@@ -46,7 +46,7 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 
 ## 📋 Pré-requisitos
 
-- Python 3.12 ou superior
+- Python 3.13 ou superior
 - Node.js 18 ou superior
 - npm ou yarn
 - Conta OpenAI com chave API
@@ -79,7 +79,7 @@ ALLOWED_ORIGINS=http://localhost:5173
 
 5. Inicie o servidor:
 ```powershell
-python main.py
+uv run .\main.py
 ```
 
 O backend estará disponível em `http://localhost:8000`

@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
 from routers import story, job, user
-from db.database import create_tables
 
-create_tables()
+# Não usar create_tables() quando estiver usando Alembic
+# As tabelas devem ser criadas via migrações: alembic upgrade head
 
 app = FastAPI(
     title="Choose Your Own Adventure Game API",

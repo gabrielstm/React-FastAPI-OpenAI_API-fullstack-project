@@ -88,20 +88,45 @@ uv sync
 ```
 
 
-6. migrações
+6. Migrações com Alembic
+
+**⚠️ IMPORTANTE:** Remova a chamada `create_tables()` do `main.py` antes de usar Alembic!
+
+6.1 Inicializar Alembic (apenas primeira vez):
 ```powershell
 alembic init alembic
 ```
 
-6.1 criar uma migração
+6.2 Criar uma migração:
 ```powershell
-alembic revision --autogenerate -m "Users Table"
+alembic revision --autogenerate -m "Descrição da mudança"
 ```
 
-6.2 executar uma migração
+6.3 **Revisar a migração gerada** antes de aplicar:
+- Abra o arquivo gerado em `alembic/versions/`
+- Verifique se os comandos estão corretos
+- **NUNCA deve ter DROP TABLE a menos que você realmente queira deletar**
+
+6.4 Aplicar migrações:
 ```powershell
 alembic upgrade head
 ```
+
+6.5 Reverter última migração (se necessário):
+```powershell
+alembic downgrade -1
+```
+
+6.6 Ver histórico de migrações:
+```powershell
+alembic history
+alembic current
+```
+
+**Dica:** Se as migrações ficarem confusas, você pode:
+1. Fazer backup do banco de dados (`databse.db`)
+2. Deletar a pasta `alembic/versions/`
+3. Recriar as migrações do zero
 
 O backend estará disponível em `http://localhost:8000`
 

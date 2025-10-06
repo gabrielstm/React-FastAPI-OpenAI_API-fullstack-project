@@ -82,6 +82,27 @@ ALLOWED_ORIGINS=http://localhost:5173
 uv run .\main.py
 ```
 
+5.1 Caso instale algum pacote:
+```powershell
+uv sync
+```
+
+
+6. migrações
+```powershell
+alembic init alembic
+```
+
+6.1 criar uma migração
+```powershell
+alembic revision --autogenerate -m "Users Table"
+```
+
+6.2 executar uma migração
+```powershell
+alembic upgrade head
+```
+
 O backend estará disponível em `http://localhost:8000`
 
 **Documentação da API:** `http://localhost:8000/docs`

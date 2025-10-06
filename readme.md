@@ -46,7 +46,7 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 
 ## 📋 Pré-requisitos
 
-- Python 3.12 ou superior
+- Python 3.13 ou superior
 - Node.js 18 ou superior
 - npm ou yarn
 - Conta OpenAI com chave API
@@ -71,6 +71,13 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+ou
+
+```powershell
+uv pip install -r requirements.txt
+```
+
+
 4. Configure as variáveis de ambiente criando um arquivo `.env`:
 ```env
 OPENAI_API_KEY=sua_chave_api_aqui
@@ -79,8 +86,54 @@ ALLOWED_ORIGINS=http://localhost:5173
 
 5. Inicie o servidor:
 ```powershell
-python main.py
+uv run .\main.py
 ```
+
+5.1 Caso instale algum pacote:
+```powershell
+uv sync
+```
+
+
+6. Migrações com Alembic
+
+**⚠️ IMPORTANTE:** Remova a chamada `create_tables()` do `main.py` antes de usar Alembic!
+
+6.1 Inicializar Alembic (apenas primeira vez):
+```powershell
+alembic init alembic
+```
+
+6.2 Criar uma migração:
+```powershell
+alembic revision --autogenerate -m "Descrição da mudança"
+```
+
+6.3 **Revisar a migração gerada** antes de aplicar:
+- Abra o arquivo gerado em `alembic/versions/`
+- Verifique se os comandos estão corretos
+- **NUNCA deve ter DROP TABLE a menos que você realmente queira deletar**
+
+6.4 Aplicar migrações:
+```powershell
+alembic upgrade head
+```
+
+6.5 Reverter última migração (se necessário):
+```powershell
+alembic downgrade -1
+```
+
+6.6 Ver histórico de migrações:
+```powershell
+alembic history
+alembic current
+```
+
+**Dica:** Se as migrações ficarem confusas, você pode:
+1. Fazer backup do banco de dados (`databse.db`)
+2. Deletar a pasta `alembic/versions/`
+3. Recriar as migrações do zero
 
 O backend estará disponível em `http://localhost:8000`
 

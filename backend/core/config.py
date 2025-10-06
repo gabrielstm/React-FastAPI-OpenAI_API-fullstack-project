@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = ""
 
     OPENAI_API_KEY: str
+    
+    # JWT Settings
+    SECRET_KEY: str = "your-secret-key-change-this-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     def __init__(self, **values):
         super().__init__(**values)

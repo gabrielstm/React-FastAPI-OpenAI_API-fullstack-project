@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
-from routers import story, job
-from db.database import create_tables
+from routers import story, job, user
 
-create_tables()
+# Não usar create_tables() quando estiver usando Alembic
+# As tabelas devem ser criadas via migrações: alembic upgrade head
 
 app = FastAPI(
     title="Choose Your Own Adventure Game API",
@@ -25,6 +25,7 @@ app.add_middleware(
 
 app.include_router(story.router, prefix=settings.API_PREFIX)
 app.include_router(job.router, prefix=settings.API_PREFIX)
+app.include_router(user.router, prefix=settings.API_PREFIX)
 
 if __name__ == "__main__":
     import uvicorn

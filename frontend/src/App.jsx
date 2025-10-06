@@ -1,7 +1,9 @@
 import './App.css'
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import StoryLoader from "./components/StoryLoader"
-import StoryGenerator from "./components/StoryGenerator.jsx";
+import Storys from "./page/Storys.jsx"
+import Register from "./page/Register.jsx"
+import Login from "./page/Login.jsx"
 
 function App() {
   return (
@@ -12,8 +14,10 @@ function App() {
         </header>
         <main>
           <Routes>
+            <Route path={"/"} element={<Storys />}/>
+            <Route path={"/login"} element={<Login />}/>
+            <Route path={"/register"} element={<Register />}/>
             <Route path={"/story/:id"} element={<StoryLoader />} />
-            <Route path={"/"} element={<StoryGenerator />}/>
           </Routes>
         </main>
       </div>

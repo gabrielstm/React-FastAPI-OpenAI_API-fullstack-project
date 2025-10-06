@@ -1,6 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { API_BASE_URL } from '../util';
 
 function Register() {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -8,6 +13,8 @@ function Register() {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,22 +59,60 @@ function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log('Form submitted:', {
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+    setSuccessMessage('');
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         email: formData.email,
         password: formData.password
       });
-      alert('Registro realizado com sucesso!');
+
+      console.log('Registro bem-sucedido:', response.data);
+      setSuccessMessage('Registro realizado com sucesso! Redirecionando...');
+      
       // Reset form
       setFormData({
         email: '',
         password: '',
         confirmPassword: ''
       });
+
+      // Redirect to home page after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      
+      if (error.response) {
+        // Error response from backend
+        const errorMessage = error.response.data.detail || 'Erro ao registrar usuário';
+        
+        // Check if it's an email already exists error
+        if (error.response.status === 400 && errorMessage.includes('já cadastrado')) {
+          setErrors({ email: errorMessage });
+        } else {
+          setErrors({ general: errorMessage });
+        }
+      } else if (error.request) {
+        // No response from server
+        setErrors({ general: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.' });
+      } else {
+        // Other errors
+        setErrors({ general: 'Erro ao processar requisição' });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,6 +120,19 @@ function Register() {
     <div className="register-container">
       <div className="register-card">
         <h2>Registrar</h2>
+        
+        {successMessage && (
+          <div className="success-banner">
+            {successMessage}
+          </div>
+        )}
+        
+        {errors.general && (
+          <div className="error-banner">
+            {errors.general}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -86,6 +144,7 @@ function Register() {
               onChange={handleChange}
               placeholder="seu@email.com"
               className={errors.email ? 'error' : ''}
+              disabled={loading}
             />
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
@@ -100,6 +159,7 @@ function Register() {
               onChange={handleChange}
               placeholder="Digite sua senha"
               className={errors.password ? 'error' : ''}
+              disabled={loading}
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
@@ -114,14 +174,19 @@ function Register() {
               onChange={handleChange}
               placeholder="Confirme sua senha"
               className={errors.confirmPassword ? 'error' : ''}
+              disabled={loading}
             />
             {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
           </div>
 
-          <button type="submit" className="submit-button">
-            Registrar
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? 'Registrando...' : 'Registrar'}
           </button>
         </form>
+        
+        <div className="login-link">
+          <p>Já tem uma conta? <a href="/">Voltar para home</a></p>
+        </div>
       </div>
     </div>
   );

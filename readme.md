@@ -71,6 +71,13 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+ou
+
+```powershell
+uv pip install -r requirements.txt
+```
+
+
 4. Configure as variáveis de ambiente criando um arquivo `.env`:
 ```env
 OPENAI_API_KEY=sua_chave_api_aqui

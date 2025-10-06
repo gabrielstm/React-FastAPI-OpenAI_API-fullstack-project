@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import StoryLoader from "./components/StoryLoader"
 import Storys from "./page/Storys.jsx"
 import Register from "./page/Register.jsx"
+import Login from "./page/Login.jsx"
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <main>
           <Routes>
             <Route path={"/"} element={<Storys />}/>
+            <Route path={"/login"} element={<Login />}/>
             <Route path={"/register"} element={<Register />}/>
             <Route path={"/story/:id"} element={<StoryLoader />} />
           </Routes>

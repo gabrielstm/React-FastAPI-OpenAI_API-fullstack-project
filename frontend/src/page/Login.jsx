@@ -3,18 +3,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../util';
 
-function Register() {
+function Login() {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,15 +42,6 @@ function Register() {
     // Validate password
     if (!formData.password) {
       newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
-    }
-
-    // Validate confirm password
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'As senhas não coincidem';
     }
 
     setErrors(newErrors);
@@ -68,39 +57,37 @@ function Register() {
 
     setLoading(true);
     setErrors({});
-    setSuccessMessage('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email: formData.email,
         password: formData.password
       });
 
-      console.log('Registro bem-sucedido:', response.data);
-      setSuccessMessage('Registro realizado com sucesso! Redirecionando...');
+      console.log('Login bem-sucedido:', response.data);
       
-      // Reset form
+      // Armazenar o token no localStorage
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('token_type', response.data.token_type);
+      
+      // Limpar formulário
       setFormData({
         email: '',
-        password: '',
-        confirmPassword: ''
+        password: ''
       });
 
-      // Redirect to home page after 2 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      // Redirecionar para a página inicial
+      navigate('/');
 
     } catch (error) {
-      console.error('Erro no registro:', error);
+      console.error('Erro no login:', error);
       
       if (error.response) {
         // Error response from backend
-        const errorMessage = error.response.data.detail || 'Erro ao registrar usuário';
+        const errorMessage = error.response.data.detail || 'Erro ao fazer login';
         
-        // Check if it's an email already exists error
-        if (error.response.status === 400 && errorMessage.includes('já cadastrado')) {
-          setErrors({ email: errorMessage });
+        if (error.response.status === 401) {
+          setErrors({ general: errorMessage });
         } else {
           setErrors({ general: errorMessage });
         }
@@ -117,15 +104,9 @@ function Register() {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <h2>Registrar</h2>
-        
-        {successMessage && (
-          <div className="success-banner">
-            {successMessage}
-          </div>
-        )}
+    <div className="login-container">
+      <div className="login-card">
+        <h2>Login</h2>
         
         {errors.general && (
           <div className="error-banner">
@@ -133,7 +114,7 @@ function Register() {
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="register-form">
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -145,6 +126,7 @@ function Register() {
               placeholder="seu@email.com"
               className={errors.email ? 'error' : ''}
               disabled={loading}
+              autoComplete="email"
             />
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
@@ -160,36 +142,22 @@ function Register() {
               placeholder="Digite sua senha"
               className={errors.password ? 'error' : ''}
               disabled={loading}
+              autoComplete="current-password"
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirmar Senha</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirme sua senha"
-              className={errors.confirmPassword ? 'error' : ''}
-              disabled={loading}
-            />
-            {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
-          </div>
-
           <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? 'Registrando...' : 'Registrar'}
+            {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
         
         <div className="auth-links">
-          <p>Já tem uma conta? <Link to="/login">Fazer login</Link></p>
+          <p>Não tem uma conta? <Link to="/register">Registrar-se</Link></p>
         </div>
       </div>
     </div>
   );
 }
 
-export default Register;
+export default Login;

@@ -9,7 +9,8 @@ function Register() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    profilePic: null
   });
 
   const [errors, setErrors] = useState({});
@@ -29,6 +30,14 @@ function Register() {
         [name]: ''
       }));
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData(prev => ({
+      ...prev,
+      profilePic: file
+    }));
   };
 
   const validateForm = () => {
@@ -71,9 +80,17 @@ function Register() {
     setSuccessMessage('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
-        email: formData.email,
-        password: formData.password
+      const formDataToSend = new FormData();
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      if (formData.profilePic) {
+        formDataToSend.append('profile_pic', formData.profilePic);
+      }
+
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       console.log('Registro bem-sucedido:', response.data);
@@ -83,7 +100,8 @@ function Register() {
       setFormData({
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        profilePic: null
       });
 
       // Redirect to home page after 2 seconds
@@ -177,6 +195,18 @@ function Register() {
               disabled={loading}
             />
             {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="profilePic">Foto de Perfil (opcional)</label>
+            <input
+              type="file"
+              id="profilePic"
+              name="profilePic"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={loading}
+            />
           </div>
 
           <button type="submit" className="submit-button" disabled={loading}>

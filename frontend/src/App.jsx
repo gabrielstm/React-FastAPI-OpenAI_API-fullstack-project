@@ -14,8 +14,8 @@ function App() {
         </header>
         <main>
           <Routes>
-            <Route path={"/"} element={<Storys />}/>
-            <Route path={"/login"} element={<Login />}/>
+            <Route path={"/stories"} element={<Storys />}/>
+            <Route path={"/"} element={<Login />}/>
             <Route path={"/register"} element={<Register />}/>
             <Route path={"/story/:id"} element={<StoryLoader />} />
           </Routes>

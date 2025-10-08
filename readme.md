@@ -35,7 +35,11 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - **LangChain** - Framework para aplicações com LLMs
 - **OpenAI API** - GPT-4o-mini para geração de histórias
 - **Uvicorn** - Servidor ASGI
+- **JWT** - Autenticação baseada em tokens (JSON Web Token)
+- **Kubernetes** - Orquestração avançada de containers (arquivos de deployment inclusos)
 - **Python 3.12+**
+
+- **python-dotenv** - Gerenciamento de variáveis de ambiente
 
 ### Frontend
 - **React 19** - Biblioteca UI
@@ -43,6 +47,13 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - **React Router** - Navegação
 - **Axios** - Cliente HTTP
 - **ESLint** - Linter
+- **Node.js 20** - Ambiente de execução do frontend
+- **Nginx** - Servidor web para produção
+- **ESLint Plugins** - `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh` para melhores práticas
+
+### Configuração & Ambiente
+- Suporte a múltiplos ambientes via `.env` tanto no backend quanto no frontend
+- Proxy de API configurável no Vite para debug local (`VITE_DEBUG`)
 
 ## 📋 Pré-requisitos
 
@@ -187,6 +198,16 @@ O frontend estará disponível em `http://localhost:5173`
 
 - `GET /api/v1/jobs/{job_id}` - Verifica o status de um job de geração
   - Retorna: Status do job (pending, completed, failed)
+
+### Usuários
+
+- `POST /api/v1/users/register` - Registra um novo usuário
+  - Body: `{ "username": "string", "password": "string" }`
+  - Retorna: Dados do usuário criado ou mensagem de sucesso
+
+- `POST /api/v1/users/login` - Realiza login do usuário
+  - Body: `{ "username": "string", "password": "string" }`
+  - Retorna: Token JWT para autenticação
 
 ## 🗄️ Estrutura do Banco de Dados
 

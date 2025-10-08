@@ -13,6 +13,7 @@ from db.database import get_db
 from models.user import User
 from schemas.user import UserRegisterRequest, UserResponse, UserLoginRequest, TokenResponse
 from core.config import settings
+from core.redis_client import redis_client
 
 router = APIRouter(
     prefix="/auth",
@@ -177,4 +178,18 @@ def get_me(current_user: User = Depends(get_current_user)):
     """
     Endpoint para obter os dados do usuário atual
     """
-    return current_user
+    # Tenta buscar foto de perfil do cache Redis
+    cache_key = f"user_profile_pic:{current_user.id}"
+    profile_pic = redis_client.get(cache_key)
+    if profile_pic is None:
+        # Se não estiver no cache, salva no Redis
+        profile_pic = current_user.profile_pic
+        if profile_pic:
+            redis_client.set(cache_key, profile_pic)
+    # Retorna o usuário com foto do cache
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "profile_pic": profile_pic,
+        "created_at": current_user.created_at
+    }

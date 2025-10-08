@@ -19,5 +19,5 @@ python-multipart>=0.0.9
 # Environment and Configuration
 python-dotenv>=1.1.0
 
-# Package Manager (optional)
-#uv
+# Redis
+redis>=5.0.0

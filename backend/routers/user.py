@@ -1,14 +1,19 @@
 import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
+import os
+import shutil
+import uuid
 
 from db.database import get_db
 from models.user import User
 from schemas.user import UserRegisterRequest, UserResponse, UserLoginRequest, TokenResponse
 from core.config import settings
+from core.redis_client import redis_client
 
 router = APIRouter(
     prefix="/auth",
@@ -47,16 +52,42 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
+def get_current_user(credentials: HTTPBearer = Depends(HTTPBearer()), db: Session = Depends(get_db)):
+    """
+    Dependência para obter o usuário atual a partir do token JWT
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(credentials.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email: str = payload.get("sub")
+        user_id: int = payload.get("user_id")
+        if email is None or user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+
 @router.post("/register", response_model=UserResponse, status_code=201)
 def register_user(
-    request: UserRegisterRequest,
+    email: str = Form(...),
+    password: str = Form(...),
+    profile_pic: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     """
     Endpoint para registrar um novo usuário
     """
     # Verificar se o email já está cadastrado
-    existing_user = db.query(User).filter(User.email == request.email).first()
+    existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(
             status_code=400,
@@ -64,17 +95,36 @@ def register_user(
         )
     
     # Validar o tamanho da senha
-    if len(request.password) < 6:
+    if len(password) < 6:
         raise HTTPException(
             status_code=400,
             detail="A senha deve ter pelo menos 6 caracteres"
         )
     
+    profile_pic_path = None
+    if profile_pic:
+        # Criar diretório uploads se não existir
+        upload_dir = "uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+
+        # Gerar nome único para o arquivo
+        file_extension = os.path.splitext(profile_pic.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join(upload_dir, unique_filename)
+
+        # Salvar o arquivo
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(profile_pic.file, buffer)
+
+        # Salvar o caminho com barra inicial para servir corretamente
+        profile_pic_path = f"/uploads/{unique_filename}"
+    
     # Criar novo usuário com senha criptografada
-    hashed_pwd = hash_password(request.password)
+    hashed_pwd = hash_password(password)
     new_user = User(
-        email=request.email,
-        hashed_password=hashed_pwd
+        email=email,
+        hashed_password=hashed_pwd,
+        profile_pic=profile_pic_path
     )
     
     db.add(new_user)
@@ -120,4 +170,26 @@ def login_user(
     return {
         "access_token": access_token,
         "token_type": "bearer"
+    }
+
+
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    """
+    Endpoint para obter os dados do usuário atual
+    """
+    # Tenta buscar foto de perfil do cache Redis
+    cache_key = f"user_profile_pic:{current_user.id}"
+    profile_pic = redis_client.get(cache_key)
+    if profile_pic is None:
+        # Se não estiver no cache, salva no Redis
+        profile_pic = current_user.profile_pic
+        if profile_pic:
+            redis_client.set(cache_key, profile_pic)
+    # Retorna o usuário com foto do cache
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "profile_pic": profile_pic,
+        "created_at": current_user.created_at
     }

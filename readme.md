@@ -8,6 +8,7 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - 🎮 **Narrativa interativa** com múltiplas escolhas e finais diferentes
 - ⚡ **Processamento assíncrono** com sistema de jobs para geração de histórias
 - 🗄️ **Persistência de dados** com PostgreSQL e SQLAlchemy
+- ⚡ **Cache de dados** com Redis (fotos de perfil de usuário)
 - 🎨 **Interface moderna** construída com React + Vite
 - 🔄 **API RESTful** com FastAPI
 - 📝 **Documentação automática** com Swagger/OpenAPI
@@ -32,6 +33,8 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 ### Backend
 - **FastAPI** - Framework web moderno e rápido
 - **SQLAlchemy** - ORM para Python
+- **PostgreSQL** - Banco de dados relacional (substitui SQLite)
+- **Redis** - Cache para dados e fotos de perfil
 - **LangChain** - Framework para aplicações com LLMs
 - **OpenAI API** - GPT-4o-mini para geração de histórias
 - **Uvicorn** - Servidor ASGI
@@ -54,6 +57,8 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 ### Configuração & Ambiente
 - Suporte a múltiplos ambientes via `.env` tanto no backend quanto no frontend
 - Proxy de API configurável no Vite para debug local (`VITE_DEBUG`)
+- Banco de dados: **PostgreSQL** 
+- Cache: **Redis** para fotos de perfil
 
 ## 📋 Pré-requisitos
 

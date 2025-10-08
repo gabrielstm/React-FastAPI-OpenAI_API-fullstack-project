@@ -70,14 +70,14 @@ function Login() {
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('token_type', response.data.token_type);
       
+      // Redirecionar para a página logado
+      navigate('/logado', { state: { email: formData.email } });
+      
       // Limpar formulário
       setFormData({
         email: '',
         password: ''
       });
-
-      // Redirecionar para a página inicial
-      navigate('/');
 
     } catch (error) {
       console.error('Erro no login:', error);

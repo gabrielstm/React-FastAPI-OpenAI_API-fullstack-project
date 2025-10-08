@@ -7,7 +7,7 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - 🤖 **Geração de histórias com IA** usando OpenAI GPT-4o-mini via LangChain
 - 🎮 **Narrativa interativa** com múltiplas escolhas e finais diferentes
 - ⚡ **Processamento assíncrono** com sistema de jobs para geração de histórias
-- 🗄️ **Persistência de dados** com SQLite e SQLAlchemy
+- 🗄️ **Persistência de dados** com PostgreSQL e SQLAlchemy
 - 🎨 **Interface moderna** construída com React + Vite
 - 🔄 **API RESTful** com FastAPI
 - 📝 **Documentação automática** com Swagger/OpenAPI
@@ -35,7 +35,11 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - **LangChain** - Framework para aplicações com LLMs
 - **OpenAI API** - GPT-4o-mini para geração de histórias
 - **Uvicorn** - Servidor ASGI
+- **JWT** - Autenticação baseada em tokens (JSON Web Token)
+- **Kubernetes** - Orquestração avançada de containers (arquivos de deployment inclusos)
 - **Python 3.12+**
+
+- **python-dotenv** - Gerenciamento de variáveis de ambiente
 
 ### Frontend
 - **React 19** - Biblioteca UI
@@ -43,6 +47,13 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 - **React Router** - Navegação
 - **Axios** - Cliente HTTP
 - **ESLint** - Linter
+- **Node.js 20** - Ambiente de execução do frontend
+- **Nginx** - Servidor web para produção
+- **ESLint Plugins** - `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh` para melhores práticas
+
+### Configuração & Ambiente
+- Suporte a múltiplos ambientes via `.env` tanto no backend quanto no frontend
+- Proxy de API configurável no Vite para debug local (`VITE_DEBUG`)
 
 ## 📋 Pré-requisitos
 
@@ -139,6 +150,36 @@ O backend estará disponível em `http://localhost:8000`
 
 **Documentação da API:** `http://localhost:8000/docs`
 
+### Rodar o Backend pela Primeira Vez com Docker
+
+Se preferir usar Docker para rodar o backend (recomendado para desenvolvimento consistente):
+
+1. Navegue até o diretório do backend:
+```bash
+cd backend
+```
+
+2. Inicie os containers com Docker Compose:
+```bash
+docker-compose up --build
+```
+Isso vai construir as imagens e iniciar o PostgreSQL e o backend automaticamente.
+
+3. Em outro terminal, execute as migrações do banco de dados:
+```bash
+docker-compose exec backend alembic upgrade head
+```
+Isso cria todas as tabelas no PostgreSQL.
+
+4. Verifique se está funcionando:
+- Backend: `http://localhost:8000`
+- Documentação da API: `http://localhost:8000/docs`
+
+Para parar os containers:
+```bash
+docker-compose down
+```
+
 ### Frontend
 
 1. Navegue até o diretório do frontend:
@@ -187,6 +228,16 @@ O frontend estará disponível em `http://localhost:5173`
 
 - `GET /api/v1/jobs/{job_id}` - Verifica o status de um job de geração
   - Retorna: Status do job (pending, completed, failed)
+
+### Usuários
+
+- `POST /api/v1/users/register` - Registra um novo usuário
+  - Body: `{ "username": "string", "password": "string" }`
+  - Retorna: Dados do usuário criado ou mensagem de sucesso
+
+- `POST /api/v1/users/login` - Realiza login do usuário
+  - Body: `{ "username": "string", "password": "string" }`
+  - Retorna: Token JWT para autenticação
 
 ## 🗄️ Estrutura do Banco de Dados
 

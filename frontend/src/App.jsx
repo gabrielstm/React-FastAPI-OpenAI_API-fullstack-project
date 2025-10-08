@@ -4,6 +4,7 @@ import StoryLoader from "./components/StoryLoader"
 import Storys from "./page/Storys.jsx"
 import Register from "./page/Register.jsx"
 import Login from "./page/Login.jsx"
+import Logado from "./page/Logado.jsx"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path={"/stories"} element={<Storys />}/>
             <Route path={"/"} element={<Login />}/>
             <Route path={"/register"} element={<Register />}/>
+            <Route path={"/logado"} element={<Logado />}/>
             <Route path={"/story/:id"} element={<StoryLoader />} />
           </Routes>
         </main>

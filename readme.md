@@ -57,7 +57,7 @@ Uma aplicação fullstack para criar histórias interativas do tipo "Choose Your
 ### Configuração & Ambiente
 - Suporte a múltiplos ambientes via `.env` tanto no backend quanto no frontend
 - Proxy de API configurável no Vite para debug local (`VITE_DEBUG`)
-- Banco de dados: **PostgreSQL** (não mais SQLite)
+- Banco de dados: **PostgreSQL** 
 - Cache: **Redis** para fotos de perfil
 
 ## 📋 Pré-requisitos

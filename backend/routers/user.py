@@ -179,14 +179,21 @@ def get_me(current_user: User = Depends(get_current_user)):
     Endpoint para obter os dados do usuário atual
     """
     # Tenta buscar foto de perfil do cache Redis
-    cache_key = f"user_profile_pic:{current_user.id}"
-    profile_pic = redis_client.get(cache_key)
-    if profile_pic is None:
-        # Se não estiver no cache, salva no Redis
-        profile_pic = current_user.profile_pic
-        if profile_pic:
-            redis_client.set(cache_key, profile_pic)
-    # Retorna o usuário com foto do cache
+    profile_pic = current_user.profile_pic
+    try:
+        cache_key = f"user_profile_pic:{current_user.id}"
+        cached_pic = redis_client.get(cache_key)
+        if cached_pic is not None:
+            profile_pic = cached_pic
+        else:
+            # Se não estiver no cache, salva no Redis
+            if profile_pic:
+                redis_client.set(cache_key, profile_pic)
+    except Exception:
+        # Se Redis falhar, usa o valor do banco
+        pass
+    
+    # Retorna o usuário
     return {
         "id": current_user.id,
         "email": current_user.email,

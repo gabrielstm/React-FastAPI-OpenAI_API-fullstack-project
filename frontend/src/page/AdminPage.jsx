@@ -42,7 +42,7 @@ function AdminPage() {
               <tr key={u.id}>
                 <td>{u.id}</td>
                 <td>{u.email}</td>
-                <td>{u.profile_pic ? <img src={u.profile_pic} alt="pic" style={{width:32, height:32, borderRadius:16}}/> : '-'}</td>
+                <td>{u.profile_pic ? <img src={u.profile_pic.startsWith('/uploads/') ? u.profile_pic : `/uploads/${u.profile_pic}`} alt="pic" style={{width:32, height:32, borderRadius:16}}/> : '-'}</td>
                 <td>{u.created_at}</td>
               </tr>
             ))}

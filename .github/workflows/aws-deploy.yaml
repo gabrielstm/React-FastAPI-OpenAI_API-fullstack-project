@@ -24,6 +24,12 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Set environment variables for tests
+        run: |
+          echo "DATABASE_URL=sqlite:///./test.db" >> $GITHUB_ENV
+          echo "OPENAI_API_KEY=test_key" >> $GITHUB_ENV
+          echo "ALLOWED_ORIGINS=http://localhost:5173" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           cd backend
@@ -32,7 +38,7 @@ jobs:
       - name: Run tests
         run: |
           cd backend
-          python -m pytest  # Assuming you have tests; adjust if needed
+          python -m pytest tests/ -v
 
   deploy:
     needs: test

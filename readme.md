@@ -155,6 +155,29 @@ O backend estará disponível em `http://localhost:8000`
 
 **Documentação da API:** `http://localhost:8000/docs`
 
+### 🧪 Testes
+
+Para executar os testes do backend:
+
+1. Navegue até o diretório do backend:
+```powershell
+cd backend
+```
+
+2. Instale as dependências (se ainda não instalou):
+```powershell
+pip install -r requirements.txt
+```
+
+3. Execute os testes com pytest:
+```powershell
+python -m pytest tests/ -v
+```
+
+Isso irá rodar todos os testes na pasta `tests/`, incluindo testes de unidade e integração da API.
+
+**Nota:** Os testes usam o TestClient do FastAPI para simular requisições HTTP sem iniciar o servidor real.
+
 ### Rodar o Backend pela Primeira Vez com Docker
 
 Se preferir usar Docker para rodar o backend (recomendado para desenvolvimento consistente):

@@ -5,6 +5,7 @@ import os
 
 from core.config import settings
 from routers import story, job, user
+from routers import admin
 
 # Não usar create_tables() quando estiver usando Alembic
 # As tabelas devem ser criadas via migrações: alembic upgrade head
@@ -32,6 +33,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.include_router(story.router, prefix=settings.API_PREFIX)
 app.include_router(job.router, prefix=settings.API_PREFIX)
 app.include_router(user.router, prefix=settings.API_PREFIX)
+app.include_router(admin.router, prefix=settings.API_PREFIX)
 
 if __name__ == "__main__":
     import uvicorn

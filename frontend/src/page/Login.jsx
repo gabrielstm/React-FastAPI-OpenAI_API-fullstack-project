@@ -154,6 +154,7 @@ function Login() {
         
         <div className="auth-links">
           <p>Não tem uma conta? <Link to="/register">Registrar-se</Link></p>
+          <p><Link to="/admin-login">Login de Admin</Link></p>
         </div>
       </div>
     </div>

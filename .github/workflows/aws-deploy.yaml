@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main
+      - aws-deploy
 
 env:
   AWS_REGION: us-east-2
@@ -11,7 +11,6 @@ env:
   ECS_CLUSTER: fast-test-cluster
   ECS_SERVICE: fast-definition-service2
   ECS_TASK_DEFINITION: fast-definition
-  NODE_ENV: test
 
 jobs:
   test:
@@ -20,24 +19,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          version: 8
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: pnpm-lock.yaml
+          python-version: "3.13"
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          cd backend
+          pip install -r requirements.txt
 
       - name: Run tests
-        run: pnpm test
+        run: |
+          cd backend
+          python -m pytest  # Assuming you have tests; adjust if needed
 
   deploy:
     needs: test
@@ -62,6 +57,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          cd backend
           docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ github.sha }} .
           docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
@@ -75,7 +71,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: todo-app
+          container-name: fastapi-app
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Deploy to Amazon ECS

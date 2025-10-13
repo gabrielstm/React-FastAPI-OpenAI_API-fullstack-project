@@ -39,7 +39,7 @@ function Login() {
       newErrors.email = 'Email inválido';
     }
 
-    // Validate password
+    // Validate password 
     if (!formData.password) {
       newErrors.password = 'Senha é obrigatória';
     }

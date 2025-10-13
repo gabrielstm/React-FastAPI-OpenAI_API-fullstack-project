@@ -80,12 +80,8 @@ jobs:
           container-name: fast
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
           environment-variables: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
             ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}
 
       - name: Deploy to Amazon ECS

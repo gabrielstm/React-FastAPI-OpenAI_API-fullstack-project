@@ -11,3 +11,4 @@ def test_read_main():
 def test_docs():
     response = client.get("/docs")
     assert response.status_code == 200
+    

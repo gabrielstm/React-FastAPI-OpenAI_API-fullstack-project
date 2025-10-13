@@ -76,6 +76,13 @@ jobs:
         run: |
           jq 'del(.enableFaultInjection) | .containerDefinitions |= map(del(.enableFaultInjection))' task-definition.json > temp.json && mv temp.json task-definition.json
 
+      - name: Debug task definition
+        run: |
+          echo "Task definition content:"
+          cat task-definition.json
+          echo "Container names:"
+          jq -r '.containerDefinitions[].name' task-definition.json
+
       - name: Update ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
